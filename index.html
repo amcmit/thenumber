@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A single-page website where a number goes up when you give it money.">
+  <title>THE NUMBER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafaf8;
+      --text: #1a1a1a;
+      --muted: #4a4a4a;
+      --accent: #3d5c4a;
+      --border: #d8d8d4;
+      --gray-btn: #6b6b6b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Source Serif 4', Georgia, serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      letter-spacing: 0.04em;
+      margin: 0 0 0.35em;
+      color: var(--text);
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 400;
+      margin-bottom: 2.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .counter-wrap {
+      margin-bottom: 0.5rem;
+    }
+
+    .counter {
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+      font-size: clamp(2.5rem, 10vw, 4.5rem);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+
+    .counter.increased {
+      animation: officialFade 0.6s ease-out;
+    }
+
+    @keyframes officialFade {
+      0% { opacity: 0.6; transform: scale(1.02); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .counter-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      text-transform: none;
+      letter-spacing: 0.01em;
+      font-style: normal;
+    }
+
+    .counter-note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .system-msg {
+      font-size: 0.8rem;
+      color: var(--accent);
+      min-height: 1.4em;
+      margin-bottom: 2rem;
+      font-family: 'IBM Plex Mono', monospace;
+      letter-spacing: 0.02em;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: var(--bg);
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.65rem 1.5rem;
+      font-size: 0.95rem;
+      font-family: 'Source Serif 4', Georgia, serif;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      border-radius: 2px;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      border-color: var(--muted);
+      background: #f5f5f2;
+    }
+
+    .btn-secondary {
+      font-size: 0.8rem;
+      color: var(--gray-btn);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      font-family: 'Source Serif 4', Georgia, serif;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--muted);
+      color: var(--text);
+      background: #f5f5f2;
+    }
+
+    .ko-fi-relabel {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin: 0.25rem 0 0;
+    }
+
+    .ko-fi-note {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .faq-link {
+      font-size: 0.7rem;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-color: var(--border);
+      margin-top: 1.25rem;
+      display: inline-block;
+    }
+
+    .faq-link:hover {
+      text-decoration-color: var(--muted);
+    }
+
+    .faq-answer {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      font-style: italic;
+      display: none;
+    }
+
+    .faq-answer.visible {
+      display: block;
+    }
+
+    .collapsible-wrap {
+      margin-top: 3rem;
+      width: 100%;
+      text-align: left;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    .collapsible-head {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--text);
+      cursor: pointer;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .collapsible-head:hover {
+      color: var(--accent);
+    }
+
+    .collapsible-head::after {
+      content: '+';
+      font-size: 1rem;
+      font-weight: 400;
+      transition: transform 0.2s ease;
+    }
+
+    .collapsible-head.open::after {
+      content: '−';
+    }
+
+    .collapsible-body {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 0.75rem 0 1rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .collapsible-body.open {
+      display: block;
+    }
+
+    footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    footer ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    footer li::before {
+      content: '• ';
+    }
+
+    .ko-fi-panel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(0,0,0,0.4);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .ko-fi-panel.open {
+      display: flex;
+    }
+
+    .ko-fi-panel-inner {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      width: 100%;
+      max-width: 360px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .ko-fi-panel-inner:focus-within {
+      outline: none;
+    }
+
+    .ko-fi-panel-header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ko-fi-panel-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.1rem 0.25rem;
+    }
+
+    .ko-fi-panel-close:hover {
+      color: var(--text);
+    }
+
+    .ko-fi-panel-iframe-wrap {
+      flex: 1;
+      min-height: 420px;
+      overflow: hidden;
+    }
+
+    .ko-fi-panel-iframe-wrap iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>THE NUMBER</h1>
+    <p class="subtitle">It is correct, but it could be higher.</p>
+
+    <div class="counter-wrap">
+      <div class="counter" id="counter" aria-live="polite">$6.00</div>
+      <p class="counter-label">Aggregate voluntary contributions to this page</p>
+      <p class="counter-note">Updated by hand at irregular intervals.</p>
+    </div>
+
+    <p class="system-msg" id="system-msg" aria-live="polite"></p>
+
+    <div class="buttons">
+      <button type="button" class="btn-primary" id="btn-increase">Increase the Number</button>
+      <button type="button" class="btn-secondary" id="btn-increase-little">Increase It a Little</button>
+      <p class="ko-fi-relabel">Submit Increase Request</p>
+      <p class="ko-fi-note">Requests are processed as soon as reasonably convenient.</p>
+    </div>
+
+    <button type="button" class="faq-link" id="faq-toggle" aria-expanded="false">What happens if I do not click this?</button>
+    <p class="faq-answer" id="faq-answer">Nothing continues to happen.</p>
+
+    <div class="collapsible-wrap">
+      <div class="collapsible-head" id="methodology-toggle" aria-expanded="false">Methodology</div>
+      <div class="collapsible-body" id="methodology-body">
+        We start with a number.<br>
+        When money is added, the number increases.<br>
+        No further adjustments are applied.
+      </div>
+      <div class="collapsible-head" id="governance-toggle" aria-expanded="false">Governance</div>
+      <div class="collapsible-body" id="governance-body">
+        None.
+      </div>
+    </div>
+  </main>
+
+  <div class="ko-fi-panel" id="ko-fi-panel" aria-hidden="true" aria-label="Submit increase request">
+    <div class="ko-fi-panel-inner">
+      <div class="ko-fi-panel-header">
+        <button type="button" class="ko-fi-panel-close" id="ko-fi-panel-close" aria-label="Close">×</button>
+      </div>
+      <div class="ko-fi-panel-iframe-wrap">
+        <iframe
+          id="ko-fi-iframe"
+          src="about:blank"
+          title="Submit increase request"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <ul>
+      <li>This number has no upper bound.</li>
+      <li>The website is functioning as intended.</li>
+      <li>Thank you for your compliance.</li>
+      <li>The number is periodically reconciled with reality.</li>
+    </ul>
+  </footer>
+
+  <script>
+    var KOFI_EMBED = 'https://ko-fi.com/thisnumbershouldbebigger/?hidefeed=true&widget=true&embed=true';
+    var panel = document.getElementById('ko-fi-panel');
+    var iframe = document.getElementById('ko-fi-iframe');
+    var counterEl = document.getElementById('counter');
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(amount);
+    }
+
+    function refreshNumberFromBackend() {
+      fetch('http://localhost:3000/api/total')
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (!data || typeof data.amount !== 'string') return;
+          var numeric = parseFloat(data.amount);
+          if (Number.isNaN(numeric)) return;
+          counterEl.textContent = formatCurrency(numeric);
+          counterEl.classList.add('increased');
+          setTimeout(function () {
+            counterEl.classList.remove('increased');
+          }, 700);
+        })
+        .catch(function () {
+          // If backend is unavailable, keep the baked-in number.
+        });
+    }
+
+    function openKoFiPanel() {
+      iframe.src = KOFI_EMBED;
+      panel.classList.add('open');
+      panel.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeKoFiPanel() {
+      panel.classList.remove('open');
+      panel.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('btn-increase').addEventListener('click', openKoFiPanel);
+    document.getElementById('btn-increase-little').addEventListener('click', openKoFiPanel);
+    document.getElementById('ko-fi-panel-close').addEventListener('click', closeKoFiPanel);
+    panel.addEventListener('click', function (e) {
+      if (e.target === panel) closeKoFiPanel();
+    });
+    document.querySelector('.ko-fi-panel-inner').addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+
+    // Load the current number from the backend as soon as the page is ready.
+    refreshNumberFromBackend();
+
+    const MESSAGES = [
+      'The number acknowledges you.',
+      'Still insufficient.',
+      'Higher than earlier today.',
+      'The number remembers.',
+      'Time is ticking.',
+      'Join Us.',
+      'There is no try, only do.',
+      'Imagine the possibilities.'
+    ];
+
+    const systemMsg = document.getElementById('system-msg');
+
+    function pickMessage() {
+      const i = Math.floor(Math.random() * MESSAGES.length);
+      systemMsg.textContent = MESSAGES[i];
+    }
+
+    function showMessageOnSchedule() {
+      pickMessage();
+      setInterval(pickMessage, 10000);
+    }
+
+    showMessageOnSchedule();
+
+    document.getElementById('faq-toggle').addEventListener('click', function () {
+      const ans = document.getElementById('faq-answer');
+      const open = ans.classList.toggle('visible');
+      this.setAttribute('aria-expanded', open);
+    });
+
+    function collapse(toggleId, bodyId) {
+      const toggle = document.getElementById(toggleId);
+      const body = document.getElementById(bodyId);
+      toggle.addEventListener('click', function () {
+        const open = body.classList.toggle('open');
+        toggle.classList.toggle('open', open);
+        toggle.setAttribute('aria-expanded', open);
+      });
+    }
+    collapse('methodology-toggle', 'methodology-body');
+    collapse('governance-toggle', 'governance-body');
+
+    if (window.location.hash === '#increased') {
+      counterEl.classList.add('increased');
+      setTimeout(function () { counterEl.classList.remove('increased'); }, 700);
+    }
+  </script>
+</body>
+</html>
